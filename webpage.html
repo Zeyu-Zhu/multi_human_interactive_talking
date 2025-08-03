@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Deformable Neural Radiance Fields creates free-viewpoint portraits (nerfies) from casually captured videos.">
+  <meta name="keywords" content="Nerfies, D-NeRF, NeRF">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multi-human Interactive Talking Generation</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+      <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            max-width: 1080px;
+            margin: auto;
+            padding: 20px;
+        }
+        .left {
+            width: 270px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+        }
+        .left img {
+            width: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.3s ease-in-out;
+        }
+        .left img:hover {
+            transform: scale(1.1);
+        }
+        .right {
+            width: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        .right video {
+            width: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .main-content {
+            max-width: 1080px; /* 你可以根据需要设为 960px、1200px 等 */
+            margin: 0 auto;    /* 水平居中 */
+            padding: 0 20px;   /* 给点左右 padding 以适应小屏幕 */
+        }
+    </style>
+</head>
+<body>
+<div class="main-content">
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://github.com/Zeyu-Zhu/Multi-human-Talking-Video-Dataset">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+
+      <!-- <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://hypernerf.github.io">
+            HyperNeRF
+          </a>
+          <a class="navbar-item" href="https://nerfies.github.io">
+            Nerfies
+          </a>
+          <a class="navbar-item" href="https://latentfusion.github.io">
+            LatentFusion
+          </a>
+          <a class="navbar-item" href="https://photoshape.github.io">
+            PhotoShape
+          </a>
+        </div>
+      </div>
+    </div> -->
+
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <img src="./static/image_MIT/logo.png" alt="Project Logo" style="max-width: 100px; margin-bottom: 20px;">
+          <h1 class="title is-1 publication-title">Multi-human Interactive Talking Generation</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://zeyu-zhu.github.io/webpage/">Zeyu Zhu</a>,</span>
+            <span class="author-block">
+              <a href="https://weijiawu.github.io">Weijia Wu</a>,</span>
+            <span class="author-block">
+              <a href="https://sites.google.com/view/showlab">Mike Zheng Shou</a>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Showlab, National University of Singapore</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>arXiv(Coming)</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/Zeyu-Zhu/Multi-human-Talking-Video-Dataset"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <span class="link-block">
+                <a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/FJ8MRB"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay muted loop playsinline height="100%">
+        <source src="./static/videos/teaser.mp4"
+                type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        <span class="dnerf">Nerfies</span> turns selfie videos from your phone into
+        free-viewpoint
+        portraits.
+      </h2>
+    </div>
+  </div>
+</section> -->
+
+
+<!-- <section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-steve">
+          <video poster="" id="steve" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/steve.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-chair-tp">
+          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/chair-tp.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-shiba">
+          <video poster="" id="shiba" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/shiba.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-fullbody">
+          <video poster="" id="fullbody" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/fullbody.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-blueshirt">
+          <video poster="" id="blueshirt" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/blueshirt.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-mask">
+          <video poster="" id="mask" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/mask.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-coffee">
+          <video poster="" id="coffee" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/coffee.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-toby">
+          <video poster="" id="toby" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/toby2.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<section class="section container">
+    <!-- 图片在上 -->
+  <div class="image-container has-text-centered">
+    <img src="./static/image_MIT/motivation.png" alt="PDF 转换的图片" style="max-width: 100%; height: auto; display: inline-block;">
+  </div>
+
+
+    <!-- 文字在下 -->
+    <div class="text-container mt-5">
+      <h2 class="title is-3 has-text-centered">Abstract</h2>
+      <div class="content has-text-justified">
+        <p>
+          Existing studies on talking video generation have predominantly focused on single-person monologues or isolated facial animations, limiting their applicability to realistic multi-human interactions.To bridge this gap, we introduce MIT, a large-scale dataset specifically designed for multi-human talking video generation. To this end, we develop an automatic pipeline that collects and annotates multi-person conversational videos. The resulting dataset comprises 12 hours of high-resolution footage, each featuring two to four speakers, with fine-grained annotations of body poses and speech interactions. It captures natural conversational dynamics in multi-speaker scenario, offering a rich resource for studying interactive visual behaviors.
+        To demonstrate the potential of MIT, we furthur propose CovOG, a baseline model for this novel task. It integrates a Multi-Human Pose Encoder (MPE) to handle varying numbers of speakers by aggregating individual pose embeddings, and an Interactive Audio Driver (IAD) to modulate head dynamics based on speaker-specific audio features. Together, these components showcase the feasibility and challenges of generating realistic multi-human talking videos, establishing MIT as a valuable benchmark for future research.
+        </p>
+      </div>
+    </div>
+</section>
+
+
+<style>
+  .content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px; /* 控制间距 */
+    max-width: 90%; /* 限制总宽度，调整整体大小 */
+    margin: 0 auto; /* 居中 */
+  }
+
+  .responsive-image {
+    max-width: 50%;
+    height: auto;
+  }
+
+  .text-container {
+    flex-grow: 2;
+  }
+
+  @media (max-width: 768px) {
+    .content-wrapper {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .responsive-image {
+      max-width: 80%;
+    }
+  }
+</style>
+
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered">
+
+      <!-- Visual Effects. -->
+      <!-- <div class="column">
+        <div class="content">
+          <h2 class="title is-3">Visual Effects</h2>
+          <p>
+            Using <i>nerfies</i> you can create fun visual effects. This Dolly zoom effect
+            would be impossible without nerfies since it would require going through a wall.
+          </p>
+          <video id="dollyzoom" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/dollyzoom-stacked.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div> -->
+      <!--/ Visual Effects. -->
+
+      <!-- Matting. -->
+      <!-- <div class="column">
+        <h2 class="title is-3">Matting</h2>
+        <div class="columns is-centered">
+          <div class="column content">
+            <p>
+              As a byproduct of our method, we can also solve the matting problem by ignoring
+              samples that fall outside of a bounding box during rendering.
+            </p>
+            <video id="matting-video" controls playsinline height="100%">
+              <source src="./static/videos/matting.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+        </div>
+      </div>
+    </div> -->
+    <!--/ Matting. -->
+
+    <!-- Animation. -->
+    <section class="section container">
+    <div class="columns is-centered">
+      <div class="column is-full-width has-text-centered">
+        <h2 class="title is-3">Multi-human Interactive Talking(MIT) Dataset</h2>
+        <div class="image-wrapper">
+          <img src="./static/image_MIT/dataset.png" alt="PDF 转换的图片" style="max-width: 100%; height: auto; display: inline-block;">
+        </div>
+        <div class="content has-text-justified" style="font-size: 1.25rem; line-height: 1.8;">
+        <p>
+          We present a high-quality dataset for multi-human interactive talking video generation, comprising over 12 hours of high-resolution conversational clips with diverse interaction patterns and approximately 200 distinct identities. The dataset was constructed through a fully automated pipeline, facilitating future scale-up with minimal manual intervention.
+        </p>
+          The following videos are generated by CovOG and post-processed using <a href="https://github.com/hzwer/ECCV2022-RIFE" target="_blank" rel="noopener noreferrer">RIFE</a> to enhance motion smoothness. They demonstrate the effectiveness of multi-human interactive talking video generation and highlight the utility of the MIT dataset in supporting complex conversational scenarios.
+        <p>
+      </div>
+      </div>
+    </div>
+    </section>
+<style>
+  .image-wrapper {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+  }
+  
+  .datasets-image {
+    max-width: 120%; /* 限制图片最大宽度 */
+    height: auto; /* 保持宽高比 */
+  }
+  
+  @media (max-width: 768px) {
+    .datasets-image {
+      max-width: 100%; /* 在小屏幕上放大 */
+    }  
+</style>    
+    <!--/ Animation. -->
+
+
+    <!-- Concurrent Work. -->
+    <!-- <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Related Links</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            There's a lot of excellent work that was introduced around the same time as ours.
+          </p>
+          <p>
+            <a href="https://arxiv.org/abs/2104.09125">Progressive Encoding for Neural Optimization</a> introduces an idea similar to our windowed position encoding for coarse-to-fine optimization.
+          </p>
+          <p>
+            <a href="https://www.albertpumarola.com/research/D-NeRF/index.html">D-NeRF</a> and <a href="https://gvv.mpi-inf.mpg.de/projects/nonrigid_nerf/">NR-NeRF</a>
+            both use deformation fields to model non-rigid scenes.
+          </p>
+          <p>
+            Some works model videos with a NeRF by directly modulating the density, such as <a href="https://video-nerf.github.io/">Video-NeRF</a>, <a href="https://www.cs.cornell.edu/~zl548/NSFF/">NSFF</a>, and <a href="https://neural-3d-video.github.io/">DyNeRF</a>
+          </p>
+          <p>
+            There are probably many more by the time you are reading this. Check out <a href="https://dellaert.github.io/NeRF/">Frank Dellart's survey on recent NeRF papers</a>, and <a href="https://github.com/yenchenlin/awesome-NeRF">Yen-Chen Lin's curated list of NeRF papers</a>.
+          </p>
+        </div>
+      </div>
+    </div> -->
+    <!--/ Concurrent Work. -->
+
+  </div>
+</section>
+
+
+<div class="hero-body">
+        <div class="container is-max-desktop">
+            <h2 class="title is-3">Two Human Conversation Result</h2>
+    </div>
+
+        <!-- 动态展示所有结果 -->
+        <section class="hero is-small">
+            <div class="container">
+                <div class="left">
+                    <img src="static/reference_image/1452_bbox.png" alt="图片1">
+                    <img src="static/speaking_score/1452.png" alt="图片2">
+                </div>
+                <div class="right">
+                    <video controls muted loop>
+                        <source src="static/video_result/1452.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </section>
+
+        <section class="hero is-small">
+            <div class="container">
+                <div class="left">
+                    <img src="static/reference_image/1378_bbox.png" alt="图片1">
+                    <img src="static/speaking_score/1378.png" alt="图片2">
+                </div>
+                <div class="right">
+                    <video controls muted loop>
+                        <source src="static/video_result/1378.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </section>
+
+        <section class="hero is-small">
+            <div class="container">
+                <div class="left">
+                    <img src="static/reference_image/1766_bbox.png" alt="图片1">
+                    <img src="static/speaking_score/1766.png" alt="图片2">
+                </div>
+                <div class="right">
+                    <video controls muted loop>
+                        <source src="static/video_result/1766.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </section>
+
+        <section class="hero is-small">
+            <div class="container">
+                <div class="left">
+                    <img src="static/reference_image/2962_bbox.png" alt="图片1">
+                    <img src="static/speaking_score/2962.png" alt="图片2">
+                </div>
+                <div class="right">
+                    <video controls muted loop>
+                        <source src="static/video_result/2962.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="hero-body">
+        <div class="container is-max-desktop">
+            <h2 class="title is-3">Multiple Human Conversation Result</h2>
+        </div>
+
+        <section class="hero is-small">
+            <div class="container">
+                <div class="left">
+                    <img src="static/reference_image/1201_bbox.png" alt="图片1">
+                    <img src="static/speaking_score/1201.png" alt="图片2">
+                </div>
+                <div class="right">
+                    <video controls muted loop>
+                        <source src="static/video_result/1201.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </section>
+
+        <section class="hero is-small">
+            <div class="container">
+                <div class="left">
+                    <img src="static/reference_image/0307_bbox.png" alt="图片1">
+                    <img src="static/speaking_score/0307.png" alt="图片2">
+                </div>
+                <div class="right">
+                    <video controls muted loop>
+                        <source src="static/video_result/0307.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <div class="hero-body">
+        <div class="container is-max-desktop">
+            <h2 class="title is-3">Cross-modal Result (Left: AnimateAnyone; Right: CovOG)</h2>
+        </div>
+
+        <section style="padding: 1rem;">
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+
+                <video controls muted loop style="width: 400px;">
+                <source src="static/cross_modal_result/AA/fallowshow_0_001647to002116_2093_4X_100fps.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video>
+
+                <video controls muted loop style="width: 400px;">
+                <source src="static/cross_modal_result/CovOG/fallowshow_0_001647to002116_2093_4X_100fps.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video>
+            </div>
+        </section>
+
+        <section style="padding: 1rem;">
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+
+                <video controls muted loop style="width: 400px;">
+                <source src="static/cross_modal_result/AA/fallowshow_11_008808to008948_0650_4X_100fps.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video>
+
+                <video controls muted loop style="width: 400px;">
+                <source src="static/cross_modal_result/CovOG/fallowshow_11_008808to008948_0650_4X_100fps.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video>
+            </div>
+        </section>
+
+
+    </div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link"
+         href="./static/videos/nerfies_paper.pdf">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>. This means you are free to borrow the <a
+              href="https://github.com/nerfies/nerfies.github.io">source code</a> of this website,
+            we just ask that you link back to this page in the footer.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+</footer>
+</body>
+</html>
